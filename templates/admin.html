@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Panel de Administración - Guardias</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+</head>
+<body>
+  <h2>Panel de Administración - Asignar Guardias</h2>
+  <div id="calendario"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const personas = {{ personas | tojson }};
+      const calendarEl = document.getElementById('calendario');
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        selectable: true,
+        events: {{ eventos | safe }},
+        height: "auto",
+        dateClick: function (info) {
+          const fechaInicio = info.dateStr;
+          const fechaFin = new Date(info.date);
+          fechaFin.setDate(fechaFin.getDate() + 1);
+          const fechaFinStr = fechaFin.toISOString().split('T')[0];
+
+          let persona = prompt("¿A quién asignás esta guardia? (Juan, Marta, Pedro)");
+          if (persona && personas[persona]) {
+            fetch("/agregar_evento", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                persona: persona,
+                fecha_inicio: fechaInicio,
+                fecha_fin: fechaFinStr
+              })
+            }).then(resp => location.reload());
+          } else if (persona) {
+            alert("Nombre no válido.");
+          }
+        }
+      });
+      calendar.render();
+    });
+  </script>
+</body>
+</html>
