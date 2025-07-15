@@ -31,9 +31,9 @@ db = SQLAlchemy(app)
 
 # Personas que hacen guardia
 personas = {
-    "Luis Miraglio": {"email": "luis@email.com", "color": "#007bff"},
-    "Gabriel Peña": {"email": "gabriel@email.com", "color": "#28a745"},
-    "Alejo Orellano": {"email": "alejo@email.com", "color": "#dc3545"}
+    "Luis Miraglio": {"email": "miraglioluis1@gmail.com", "color": "#007bff"},
+    "Gabriel Peña": {"email": "gabi.2018.p@gmail.com", "color": "#28a745"},
+    "Alejo Orellano": {"email": "alejo.orellano.ices@gmail.com", "color": "#dc3545"}
 }
 
 # Modelos
