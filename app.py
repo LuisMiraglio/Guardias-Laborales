@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, s
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from flask_mail import Mail, Message
-from apscheduler.schedulers.background import BackgroundScheduler
 import os
 from dotenv import load_dotenv
 
@@ -169,9 +168,12 @@ def logout():
     session.clear()
     return redirect(url_for("admin"))
 
-scheduler = BackgroundScheduler()
-scheduler.add_job(enviar_correos_guardias, 'cron', day_of_week='fri', hour=12, minute=0)
-scheduler.start()
+@app.route("/enviar_recordatorio")
+def enviar_recordatorio_manual():
+    if not session.get('admin'):
+        return redirect(url_for("admin"))
+    enviar_correos_guardias()
+    return "Correo enviado manualmente."
 
 if __name__ == "__main__":
     app.run(debug=True)
