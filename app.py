@@ -1,29 +1,75 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session
-from datetime import datetime
-import json
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime, timedelta
+from flask_mail import Mail, Message
+from apscheduler.schedulers.background import BackgroundScheduler
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'clave-secreta-luis'
 
-# Correos y colores asignados a las 3 personas (pueden modificarse después)
+# Configuración de correo
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'miraglioluis1@gmail.com'
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = 'miraglioluis1@gmail.com'
+
+mail = Mail(app)
+
+# Configuración de base de datos SQLite con ruta absoluta
+basedir = os.path.abspath(os.path.dirname(__file__))
+db_path = os.path.join(basedir, 'instance', 'guardias.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+# Personas que hacen guardia
 personas = {
-    "Juan": {"email": "juan@email.com", "color": "#007bff"},
-    "Marta": {"email": "marta@email.com", "color": "#28a745"},
-    "Pedro": {"email": "pedro@email.com", "color": "#dc3545"}
+    "Luis Miraglio": {"email": "luis@email.com", "color": "#007bff"},
+    "Gabriel Peña": {"email": "gabriel@email.com", "color": "#28a745"},
+    "Alejo Orellano": {"email": "alejo@email.com", "color": "#dc3545"}
 }
 
-# Cargar eventos desde archivo JSON
-EVENTOS_FILE = "eventos.json"
-if os.path.exists(EVENTOS_FILE):
-    with open(EVENTOS_FILE, "r") as f:
-        eventos = json.load(f)
-else:
-    eventos = []
+# Modelos
+class Evento(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    persona = db.Column(db.String(100), nullable=False)
+    fecha_inicio = db.Column(db.String(10), nullable=False)
+    fecha_fin = db.Column(db.String(10), nullable=False)
+    color = db.Column(db.String(20), nullable=False)
+
+class Historial(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    descripcion = db.Column(db.Text, nullable=False)
+
+# Función para registrar historial
+def registrar_historial(mensaje):
+    h = Historial(descripcion=mensaje)
+    db.session.add(h)
+    db.session.commit()
+
+with app.app_context():
+    db.create_all()
 
 @app.route("/")
 def calendario_publico():
-    return render_template("calendario.html", eventos=json.dumps(eventos))
+    eventos = Evento.query.all()
+    eventos_json = [
+        {
+            "title": e.persona,
+            "start": e.fecha_inicio,
+            "end": e.fecha_fin,
+            "color": e.color
+        } for e in eventos
+    ]
+    return render_template("calendario.html", eventos=eventos_json)
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
@@ -39,7 +85,23 @@ def admin():
 def panel_admin():
     if not session.get('admin'):
         return redirect(url_for("admin"))
-    return render_template("admin.html", eventos=json.dumps(eventos), personas=personas)
+    eventos = Evento.query.all()
+    eventos_json = [
+        {
+            "title": e.persona,
+            "start": e.fecha_inicio,
+            "end": e.fecha_fin,
+            "color": e.color
+        } for e in eventos
+    ]
+    return render_template("admin.html", eventos=eventos_json, personas=personas)
+
+@app.route("/historial")
+def ver_historial():
+    if not session.get('admin'):
+        return redirect(url_for("admin"))
+    lineas = Historial.query.order_by(Historial.fecha.desc()).all()
+    return render_template("historial.html", lineas=lineas)
 
 @app.route("/agregar_evento", methods=["POST"])
 def agregar_evento():
@@ -47,16 +109,69 @@ def agregar_evento():
         return "No autorizado", 403
 
     data = request.json
-    nuevo_evento = {
-        "title": data['persona'],
-        "start": data['fecha_inicio'],
-        "end": data['fecha_fin'],
-        "color": personas[data['persona']]['color']
-    }
-    eventos.append(nuevo_evento)
-    with open(EVENTOS_FILE, "w") as f:
-        json.dump(eventos, f)
+    nuevo_evento = Evento(
+        persona=data['persona'],
+        fecha_inicio=data['fecha_inicio'],
+        fecha_fin=data['fecha_fin'],
+        color=personas[data['persona']]['color']
+    )
+    db.session.add(nuevo_evento)
+    db.session.commit()
+    registrar_historial(f"Guardia asignada a {data['persona']} del {data['fecha_inicio']} al {data['fecha_fin']}")
     return jsonify({"status": "ok"})
+
+@app.route("/editar_evento", methods=["POST"])
+def editar_evento():
+    if not session.get('admin'):
+        return "No autorizado", 403
+
+    data = request.json
+    evento = Evento.query.filter_by(fecha_inicio=data['fecha_inicio'], fecha_fin=data['fecha_fin']).first()
+    if evento:
+        evento.persona = data['persona']
+        evento.color = personas[data['persona']]['color']
+        db.session.commit()
+        registrar_historial(f"Guardia editada: ahora es {data['persona']} del {data['fecha_inicio']} al {data['fecha_fin']}")
+    return jsonify({"status": "editado"})
+
+@app.route("/eliminar_evento", methods=["POST"])
+def eliminar_evento():
+    if not session.get('admin'):
+        return "No autorizado", 403
+
+    data = request.json
+    evento = Evento.query.filter_by(fecha_inicio=data['fecha_inicio'], fecha_fin=data['fecha_fin']).first()
+    if evento:
+        db.session.delete(evento)
+        db.session.commit()
+        registrar_historial(f"Guardia eliminada del {data['fecha_inicio']} al {data['fecha_fin']}")
+    return jsonify({"status": "eliminado"})
+
+def enviar_correos_guardias():
+    hoy = datetime.today().date()
+    sabado = hoy + timedelta((5 - hoy.weekday()) % 7)
+    evento = Evento.query.filter_by(fecha_inicio=sabado.isoformat()).first()
+    if evento and evento.persona in personas:
+        email_destino = personas[evento.persona]['email']
+        mensaje = Message(
+            subject=f"Recordatorio de guardia: {evento.fecha_inicio} al {evento.fecha_fin}",
+            recipients=[email_destino],
+            body=f"Hola {evento.persona},\n\nTe recordamos que tenés una guardia asignada para este fin de semana ({evento.fecha_inicio} al {evento.fecha_fin}).\n\nSaludos,\nSistema de Guardias"
+        )
+        try:
+            mail.send(mensaje)
+            registrar_historial(f"Correo enviado a {evento.persona} para guardia del {evento.fecha_inicio} al {evento.fecha_fin}")
+        except Exception as e:
+            registrar_historial(f"Error al enviar correo a {evento.persona}: {e}")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("admin"))
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(enviar_correos_guardias, 'cron', day_of_week='fri', hour=12, minute=0)
+scheduler.start()
 
 if __name__ == "__main__":
     app.run(debug=True)

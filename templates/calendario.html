@@ -2,20 +2,77 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Guardias - Vista Pública</title>
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background-color: #022f67;
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+    }
+    #leyenda {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 10px auto;
+      flex-wrap: wrap;
+      padding: 0 10px;
+    }
+    .leyenda-item {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .color-caja {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      margin-right: 6px;
+    }
+    #calendario {
+      padding: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header h2 {
+        font-size: 18px;
+      }
+      .leyenda-item {
+        font-size: 13px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h2>Calendario de Guardias</h2>
+  <header>
+    <h2>Calendario de Guardias - Conectar SRL</h2>
+  </header>
+
+  <div id="leyenda">
+    <div class="leyenda-item"><div class="color-caja" style="background:#007bff;"></div> Luis Miraglio</div>
+    <div class="leyenda-item"><div class="color-caja" style="background:#28a745;"></div> Gabriel Peña</div>
+    <div class="leyenda-item"><div class="color-caja" style="background:#dc3545;"></div> Alejo Orellano</div>
+  </div>
+
   <div id="calendario"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const calendarEl = document.getElementById('calendario');
       const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         height: 'auto',
+        locale: 'es',
         events: {{ eventos | safe }}
       });
       calendar.render();
