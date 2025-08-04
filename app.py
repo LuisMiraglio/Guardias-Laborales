@@ -73,7 +73,7 @@ def calendario_publico():
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
     if request.method == "POST":
-        if request.form.get("password") == "admin123":
+        if request.form.get("password") == os.getenv("ADMIN_PASSWORD"):
             session['admin'] = True
             return redirect(url_for("panel_admin"))
         else:

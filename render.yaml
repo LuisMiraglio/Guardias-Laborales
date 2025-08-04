@@ -1,3 +1,4 @@
+services:
   - type: web
     name: guardias-laborales
     env: python
@@ -8,4 +9,6 @@
         value: miraglioluis1@gmail.com
       - key: MAIL_PASSWORD
         value: tu_clave_app_gmail
+      - key: ADMIN_PASSWORD
+        value: admin123LM
     staticPublishPath: instance
