@@ -9,123 +9,194 @@
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.min.js"></script>
   <style>
     :root{
-      --header-bg:#1c1c1c;
-      --btn-bg:#343a40;
+      /* Header + botones */
+      --brand:#022f67;
+
+      --btn-bg:#343a40;            /* base gris (si hiciera falta) */
       --btn-bg-hover:#4b5259;
-      --btn-danger:#dc3545;
+
+      --amber:#FBBF24;             /* Vista Pública */
+      --amber-border:#F59E0B;
+      --amber-hover:#F59E0B;
+      --amber-active:#D97706;
+
+      --btn-danger:#dc3545;        /* Cerrar sesión */
       --btn-danger-hover:#a71d2a;
+
+      /* Nuevos colores */
+      --btn-info:#22c55e;
+      --btn-info-hover:#16a34a;
+      --btn-info-active:#15803d;
+
+
+      --btn-slate:#6B7280;         /* Historial */
+      --btn-slate-hover:#4B5563;
+
       --text:#fff;
       --radius:8px;
       --pad-y:8px;
       --pad-x:14px;
+
+      /* Look & feel del calendario (como pública) */
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --grid:#e7edf5;
+      --head-bg:#f3f6fb;
+      --today-pill:#0d6efd;
     }
+
     *{box-sizing:border-box}
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
       background:#f6f7fb;
+      color:#111;
     }
-    header {
-      background-color: var(--header-bg);
-      color: var(--text);
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
+
+    /* ===== Header ===== */
+    header{
+      background:var(--brand);
+      color:var(--text);
+      padding:12px 20px;
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
     }
-    header h2 {
-      margin: 0;
-      font-size: 20px;
-      flex: 1 1 auto;
-    }
-    .actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex: 0 0 auto;
-    }
+    header h2{ margin:0; font-size:20px; flex:1 1 auto; letter-spacing:.2px; }
+
+    .actions{ display:flex; align-items:center; gap:10px; }
+
     .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      text-decoration:none;
-      color: var(--text);
-      background: var(--btn-bg);
-      padding: var(--pad-y) var(--pad-x);
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1;
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: background .15s ease, transform .05s ease, box-shadow .15s ease;
-      min-height: 36px;
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:8px; text-decoration:none;
+      color:var(--text);
+      background:var(--btn-bg);
+      padding:var(--pad-y) var(--pad-x);
+      border-radius:var(--radius);
+      font-size:14px; font-weight:600; line-height:1;
+      border:1px solid transparent; cursor:pointer;
+      transition:background .15s ease, transform .05s ease, box-shadow .15s ease;
+      min-height:36px;
+      box-shadow:0 2px 8px rgba(0,0,0,.18);
     }
-    .btn:hover{ background: var(--btn-bg-hover); }
-    .btn:active{ transform: scale(.98); }
-    .btn:focus{ outline: 2px solid #7aa7ff; outline-offset: 2px; }
-    .btn-danger{ background: var(--btn-danger); }
-    .btn-danger:hover{ background: var(--btn-danger-hover); }
+    .btn:hover{ background:var(--btn-bg-hover); box-shadow:0 4px 12px rgba(0,0,0,.22); }
+    .btn:active{ transform:scale(.98); }
+    .btn:focus-visible{ outline:2px solid #7aa7ff; outline-offset:2px; }
 
-    /* ⬇️ Ancho completo */
-    #calendario {
-      padding: 10px 20px;
-      margin: 0;
-      max-width: none;
-      width: 100%;
+    .btn-amber{
+      background:var(--amber); color:#0F172A; border-color:var(--amber-border);
+    }
+    .btn-amber:hover{ background:var(--amber-hover); }
+    .btn-amber:active{ background:var(--amber-active); }
+
+    .btn-danger{ background:var(--btn-danger); color:#fff; }
+    .btn-danger:hover{ background:var(--btn-danger-hover); }
+
+    /* Nuevas variantes */
+    .btn-info{
+      background:var(--btn-info); color:#fff;
+    }
+    .btn-info:hover{ background:var(--btn-info-hover); }
+    .btn-info:active{ background:var(--btn-info-active); }
+
+    .btn-slate{
+      background:var(--btn-slate); color:#fff;
+    }
+    .btn-slate:hover{ background:var(--btn-slate-hover); }
+
+    /* ===== Contenedor calendario ===== */
+    #calendario{ padding:14px 20px 20px; width:100%; box-sizing:border-box; }
+
+    /* ===== FullCalendar (igual a pública) ===== */
+    .fc-theme-standard td, .fc-theme-standard th { border-color: var(--grid); }
+
+    .fc .fc-toolbar { gap: 10px; }
+    .fc .fc-toolbar-title{
+      font-weight: 800;
+      letter-spacing:.3px;
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      color: var(--ink);
     }
 
-    .overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
+    .fc .fc-button{
+      border-radius: 10px;
+      border: 0;
+      padding: 6px 12px;
+      line-height: 1.1;
+      box-shadow: 0 1px 2px rgba(0,0,0,.08);
     }
-    .modal {
-      background: #fff;
-      padding: 25px 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-    }
-    .modal h3 { margin: 0 0 15px; font-size: 20px; color: #333; }
-    .modal label { display:block; margin-bottom:10px; font-size:14px; color:#555; text-align:left; }
-    .modal select {
-      width: 100%;
-      padding: 10px;
-      font-size: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-bottom: 15px;
-    }
-    .modal button {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      font-size: 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-    }
-    .modal button:hover { background-color: #0056b3; }
-    .btn-danger-modal { background-color: #dc3545 !important; }
-    .btn-danger-modal:hover { background-color: #a71d2a !important; }
+    .fc .fc-button-primary{ background:#2f3747; }
+    .fc .fc-button-primary:hover{ background:#232a38; }
 
-    @media (max-width: 700px) {
-      header{ padding-bottom: 14px; }
+    .fc .fc-col-header-cell{ background: var(--head-bg); }
+    .fc .fc-col-header-cell-cushion{
+      padding: 12px 6px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: capitalize;
+      letter-spacing:.2px;
+    }
+
+    .fc .fc-daygrid-day-frame{ padding: 6px; }
+    .fc .fc-daygrid-day-number{
+      display:inline-block;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-weight: 700;
+      color:#374151;
+    }
+    .fc .fc-day-today .fc-daygrid-day-number{
+      background: rgba(13,110,253,.12);
+      color: var(--today-pill);
+    }
+    .fc .fc-day-other .fc-daygrid-day-number{ color:#9aa3af; }
+    .fc .fc-day-other .fc-daygrid-event{ opacity:.6; }
+
+    .fc .fc-day-sat .fc-daygrid-day-frame,
+    .fc .fc-day-sun .fc-daygrid-day-frame{ background:#fafcff; }
+
+    .fc .fc-daygrid-event{
+      border:0;
+      border-radius:10px;
+      padding:2px 6px;
+      font-weight:600;
+      box-shadow:0 1px 0 rgba(0,0,0,.06);
+    }
+    .fc .fc-event-time{ font-weight:700; }
+
+    .fc .fc-more-link{ font-weight:700; color:#2563eb; }
+
+    /* ===== Modales ===== */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.6);
+      display:none; justify-content:center; align-items:center;
+      z-index:999;
+    }
+    .modal{
+      background:#fff; padding:25px 30px; border-radius:12px;
+      box-shadow:0 8px 20px rgba(0,0,0,.2);
+      width:90%; max-width:400px; text-align:center;
+    }
+    .modal h3{ margin:0 0 15px; font-size:20px; color:#333; }
+    .modal label{ display:block; margin-bottom:10px; font-size:14px; color:#555; text-align:left; }
+    .modal select{
+      width:100%; padding:10px; font-size:15px;
+      border:1px solid #ccc; border-radius:6px; margin-bottom:15px;
+    }
+    .modal button{
+      background:#007bff; color:#fff; padding:10px 15px; border:none;
+      font-size:15px; border-radius:6px; cursor:pointer; width:100%;
+    }
+    .modal button:hover{ background:#0056b3; }
+    .btn-danger-modal{ background:#dc3545 !important; }
+    .btn-danger-modal:hover{ background:#a71d2a !important; }
+
+    @media (max-width:700px){
+      header{ padding-bottom:14px; }
       header h2{ font-size:18px; }
       .actions{ width:100%; justify-content:flex-start; }
       .btn{ font-size:13px; padding:7px 12px; }
       #calendario{ padding:10px; }
+      .fc .fc-col-header-cell-cushion{ padding:10px 4px; }
     }
   </style>
 </head>
@@ -133,8 +204,9 @@
   <header>
     <h2>Panel de Guardias - Conectar SRL</h2>
     <nav class="actions" aria-label="Acciones del panel">
-      <a class="btn" href="/">Vista Pública</a>
-      <a class="btn" href="{{ url_for('ver_historial') }}" title="Ver historial">Historial</a>
+      <a class="btn btn-amber" href="/">Vista Pública</a>
+      <button class="btn btn-info" id="sendReminderBtn" type="button" title="Enviar recordatorio por email">Enviar recordatorio</button>
+      <a class="btn btn-slate" href="{{ url_for('ver_historial') }}" title="Ver historial">Historial</a>
       <a class="btn btn-danger" href="{{ url_for('logout') }}" title="Cerrar sesión">Cerrar sesión</a>
     </nav>
   </header>
@@ -178,43 +250,70 @@
     </div>
   </div>
 
-  <!-- Datos en JSON para evitar errores del editor -->
+  <!-- Datos en JSON -->
   <script id="personas-json" type="application/json">{{ personas | tojson }}</script>
   <script id="eventos-json"  type="application/json">{{ eventos  | tojson }}</script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // Lee datos seguros desde los scripts JSON
+      // Datos seguros
       const personas = JSON.parse(document.getElementById('personas-json').textContent || '[]');
       const eventos  = JSON.parse(document.getElementById('eventos-json').textContent  || '[]');
 
-      const calendarEl      = document.getElementById('calendario');
-      const formOverlay     = document.getElementById('form-overlay');
-      const editOverlay     = document.getElementById('edit-overlay');
-      const deleteOverlay   = document.getElementById('delete-overlay');
-      const personaSelect   = document.getElementById('personaSelect');
+      // Refs
+      const calendarEl        = document.getElementById('calendario');
+      const formOverlay       = document.getElementById('form-overlay');
+      const editOverlay       = document.getElementById('edit-overlay');
+      const deleteOverlay     = document.getElementById('delete-overlay');
+      const personaSelect     = document.getElementById('personaSelect');
       const personaEditSelect = document.getElementById('personaEditSelect');
       const guardarBtn        = document.getElementById('guardarBtn');
       const editarBtn         = document.getElementById('editarBtn');
       const confirmDeleteBtn  = document.getElementById('confirmDeleteBtn');
+      const sendReminderBtn   = document.getElementById('sendReminderBtn');
 
       let fechaInicio = null;
       let fechaFin    = null;
       let eventoActual = null;
 
-      // Helper: valida si la persona existe en la estructura recibida
       function personaExiste(nombre, data){
         if (Array.isArray(data)) return data.includes(nombre);
         if (data && typeof data === 'object') return Object.prototype.hasOwnProperty.call(data, nombre);
         return false;
       }
 
+      // Botón: enviar recordatorio
+      sendReminderBtn.addEventListener('click', async () => {
+        if (!confirm('¿Enviar recordatorio por correo al guardia del próximo sábado?')) return;
+        const original = sendReminderBtn.textContent;
+        sendReminderBtn.disabled = true;
+        sendReminderBtn.textContent = 'Enviando…';
+        try {
+          // Tu ruta actual es GET:
+          const res = await fetch('/enviar_recordatorio', { method: 'GET' });
+          const txt = await res.text();
+          alert(txt || 'Listo.');
+        } catch (e) {
+          alert('No se pudo enviar el correo. Verifica la conexión o el servidor.');
+        } finally {
+          sendReminderBtn.disabled = false;
+          sendReminderBtn.textContent = original;
+        }
+      });
+
       const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
-        selectable: true,
-        events: eventos,             // ← sin Jinja dentro de JS
-        height: "auto",
+        height: 'auto',
         locale: 'es',
+        firstDay: 1,
+        stickyHeaderDates: true,
+        dayMaxEventRows: 3,
+        moreLinkText: n => `+${n} más`,
+        buttonText: { today: 'Hoy' },
+        headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
+
+        selectable: true,
+        events: eventos,
 
         dateClick: function (info) {
           fechaInicio = info.dateStr;
@@ -241,15 +340,8 @@
           fetch("/agregar_evento", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              persona: persona,
-              fecha_inicio: fechaInicio,
-              fecha_fin: fechaFin
-            })
-          }).then(() => {
-            formOverlay.style.display = "none";
-            location.reload();
-          });
+            body: JSON.stringify({ persona, fecha_inicio: fechaInicio, fecha_fin: fechaFin })
+          }).then(() => { formOverlay.style.display = "none"; location.reload(); });
         }
       });
 
@@ -263,15 +355,8 @@
           fetch("/editar_evento", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              persona: nuevaPersona,
-              fecha_inicio: startStr,
-              fecha_fin: endStr
-            })
-          }).then(() => {
-            editOverlay.style.display = "none";
-            location.reload();
-          });
+            body: JSON.stringify({ persona: nuevaPersona, fecha_inicio: startStr, fecha_fin: endStr })
+          }).then(() => { editOverlay.style.display = "none"; location.reload(); });
         }
       });
 
@@ -283,22 +368,12 @@
         fetch("/eliminar_evento", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fecha_inicio: startStr,
-            fecha_fin: endStr
-          })
-        }).then(() => {
-          deleteOverlay.style.display = "none";
-          location.reload();
-        });
+          body: JSON.stringify({ fecha_inicio: startStr, fecha_fin: endStr })
+        }).then(() => { deleteOverlay.style.display = "none"; location.reload(); });
       });
 
-      [formOverlay, editOverlay, deleteOverlay].forEach((overlay) => {
-        overlay.addEventListener("click", (e) => {
-          if (e.target === overlay) {
-            overlay.style.display = "none";
-          }
-        });
+      [formOverlay, editOverlay, deleteOverlay].forEach((ov) => {
+        ov.addEventListener("click", (e) => { if (e.target === ov) ov.style.display = "none"; });
       });
 
       calendar.render();

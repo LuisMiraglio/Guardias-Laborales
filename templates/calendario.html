@@ -6,74 +6,145 @@
   <title>Guardias - Vista Pública</title>
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
   <style>
+    :root{
+      --brand:#022f67;
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --grid:#e7edf5;
+      --head-bg:#f3f6fb;
+      --today-pill:#0d6efd;
+    }
+    *{box-sizing:border-box}
     body {
       margin: 0;
       font-family: Arial, sans-serif;
+      color: var(--ink);
+      background: #fff;
     }
+
+    /* Header */
     header {
-      background-color: #022f67;
+      background-color: var(--brand);
       color: white;
       padding: 15px 20px;
       position: relative;
       display: flex;
       align-items: center;
-      justify-content: center; /* mantiene el título centrado */
+      justify-content: center;
     }
-    header h2 { margin: 0; }
+    header h2 { margin: 0; letter-spacing:.3px; }
+
+    /* Botón Panel Administración — ámbar con alto fijo */
     .admin-btn {
       position: absolute;
-      right: 20px;
-      top: 50%;
+      right: 20px; top: 50%;
       transform: translateY(-50%);
-      background: #000;
-      color: #fff;
-      text-decoration: none;
-      border: none;
-      border-radius: 6px;
+      display:inline-flex; align-items:center; justify-content:center;
+      height: 36px;                 /* igual que en login */
       padding: 8px 14px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-      transition: filter 0.2s ease, transform 0.05s ease;
+      border-radius: 8px;
+      font-size: 14px; font-weight: 600;
+      text-decoration: none; cursor: pointer;
+
+      background: #FBBF24;          /* ámbar */
+      color: #0F172A;               /* texto oscuro */
+      border: 1px solid #F59E0B;
+      box-shadow: 0 2px 8px rgba(0,0,0,.18);
+      transition: background .15s ease, box-shadow .15s ease, transform .05s ease;
     }
-    .admin-btn:hover { filter: brightness(1.15); }
-    .admin-btn:active { transform: translateY(-50%) scale(0.98); }
+    .admin-btn:hover { background:#F59E0B; box-shadow:0 4px 12px rgba(0,0,0,.22); }
+    .admin-btn:active { background:#D97706; transform: translateY(-50%) scale(.98); }
+    .admin-btn:focus-visible{ outline:2px solid #7aa7ff; outline-offset:2px; }
 
     /* Contenedor del calendario */
     #calendario {
-      padding: 10px 20px;
+      padding: 14px 20px 20px;
       width: 100%;
       box-sizing: border-box;
     }
 
-    /* Responsive */
+    /* ===== FullCalendar look & feel ===== */
+    .fc-theme-standard td, .fc-theme-standard th { border-color: var(--grid); }
+
+    .fc .fc-toolbar { gap: 10px; }
+    .fc .fc-toolbar-title{
+      font-weight: 800;
+      letter-spacing:.3px;
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      color: var(--ink);
+    }
+
+    .fc .fc-button{
+      border-radius: 10px;
+      border: 0;
+      padding: 6px 12px;
+      line-height: 1.1;
+      box-shadow: 0 1px 2px rgba(0,0,0,.08);
+    }
+    .fc .fc-button-primary{ background:#2f3747; }
+    .fc .fc-button-primary:hover{ background:#232a38; }
+
+    .fc .fc-col-header-cell{ background: var(--head-bg); }
+    .fc .fc-col-header-cell-cushion{
+      padding: 12px 6px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: capitalize;
+      letter-spacing:.2px;
+    }
+
+    .fc .fc-daygrid-day-frame{ padding: 6px; }
+    .fc .fc-daygrid-day-number{
+      display:inline-block;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-weight: 700;
+      color:#374151;
+    }
+    .fc .fc-day-today .fc-daygrid-day-number{
+      background: rgba(13,110,253,.12);
+      color: var(--today-pill);
+    }
+    .fc .fc-day-other .fc-daygrid-day-number{ color:#9aa3af; }
+    .fc .fc-day-other .fc-daygrid-event{ opacity:.6; }
+
+    .fc .fc-day-sat .fc-daygrid-day-frame,
+    .fc .fc-day-sun .fc-daygrid-day-frame{ background: #fafcff; }
+
+    .fc .fc-daygrid-event{
+      border: 0;
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-weight: 600;
+      box-shadow: 0 1px 0 rgba(0,0,0,.06);
+    }
+    .fc .fc-event-time{ font-weight: 700; }
+
+    .fc .fc-more-link{
+      font-weight: 700;
+      color: #2563eb;
+    }
+
     @media (max-width: 600px) {
-      header h2 { font-size: 18px; }
-      .admin-btn {
-        right: 12px;
-        padding: 7px 12px;
-        font-size: 13px;
-        border-radius: 5px;
-      }
+      header h2 { font-size: 18px; text-align:center; }
+      .admin-btn { right: 12px; padding: 7px 12px; font-size: 13px; border-radius: 6px; height:34px; }
+      #calendario{ padding: 10px; }
+      .fc .fc-col-header-cell-cushion{ padding:10px 4px; }
     }
   </style>
 </head>
 <body>
   <header>
     <h2>Calendario de Guardias - Conectar SRL</h2>
-    <!-- Cambiá el href si tu ruta del panel es distinta -->
     <a class="admin-btn" href="/panel" title="Ir al Panel de Administración">Panel Administración</a>
   </header>
-
-  <!-- Leyenda eliminada -->
 
   <div id="calendario"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.min.js"></script>
 
-  <!-- Eventos en JSON para evitar errores del editor -->
+  <!-- Eventos en JSON -->
   <script id="eventos-json" type="application/json">{{ eventos | tojson }}</script>
 
   <script>
@@ -85,6 +156,13 @@
         initialView: 'dayGridMonth',
         height: 'auto',
         locale: 'es',
+        firstDay: 1,
+        stickyHeaderDates: true,
+        dayMaxEventRows: 3,
+        moreLinkText: n => `+${n} más`,
+        buttonText: { today: 'Hoy' },
+        headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
+        dayHeaderFormat: { weekday: 'short' },
         events: eventos
       });
 
