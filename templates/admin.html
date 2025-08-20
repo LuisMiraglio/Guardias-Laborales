@@ -8,42 +8,73 @@
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.min.js"></script>
   <style>
+    :root{
+      --header-bg:#1c1c1c;
+      --btn-bg:#343a40;
+      --btn-bg-hover:#4b5259;
+      --btn-danger:#dc3545;
+      --btn-danger-hover:#a71d2a;
+      --text:#fff;
+      --radius:8px;
+      --pad-y:8px;
+      --pad-x:14px;
+    }
+    *{box-sizing:border-box}
     body {
       margin: 0;
       font-family: Arial, sans-serif;
+      background:#f6f7fb;
     }
     header {
-      background-color: #1c1c1c;
-      color: white;
+      background-color: var(--header-bg);
+      color: var(--text);
       padding: 12px 20px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 12px;
       flex-wrap: wrap;
     }
     header h2 {
       margin: 0;
       font-size: 20px;
+      flex: 1 1 auto;
     }
-    header div {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 8px;
+    .actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex: 0 0 auto;
     }
-    header a {
-      color: white;
-      text-decoration: none;
-      background: #343a40;
-      padding: 6px 12px;
-      border-radius: 6px;
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      text-decoration:none;
+      color: var(--text);
+      background: var(--btn-bg);
+      padding: var(--pad-y) var(--pad-x);
+      border-radius: var(--radius);
       font-size: 14px;
+      font-weight: 600;
+      line-height: 1;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background .15s ease, transform .05s ease, box-shadow .15s ease;
+      min-height: 36px;
     }
-    header a.logout {
-      background: #dc3545;
-    }
+    .btn:hover{ background: var(--btn-bg-hover); }
+    .btn:active{ transform: scale(.98); }
+    .btn:focus{ outline: 2px solid #7aa7ff; outline-offset: 2px; }
+    .btn-danger{ background: var(--btn-danger); }
+    .btn-danger:hover{ background: var(--btn-danger-hover); }
+
+    /* ⬇️ Ancho completo */
     #calendario {
-      padding: 15px;
+      padding: 10px 20px;
+      margin: 0;
+      max-width: none;
+      width: 100%;
     }
 
     .overlay {
@@ -56,7 +87,6 @@
       align-items: center;
       z-index: 999;
     }
-
     .modal {
       background: #fff;
       padding: 25px 30px;
@@ -66,21 +96,8 @@
       max-width: 400px;
       text-align: center;
     }
-
-    .modal h3 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      font-size: 20px;
-      color: #333;
-    }
-
-    .modal label {
-      display: block;
-      margin-bottom: 10px;
-      font-size: 14px;
-      color: #555;
-    }
-
+    .modal h3 { margin: 0 0 15px; font-size: 20px; color: #333; }
+    .modal label { display:block; margin-bottom:10px; font-size:14px; color:#555; text-align:left; }
     .modal select {
       width: 100%;
       padding: 10px;
@@ -89,7 +106,6 @@
       border-radius: 6px;
       margin-bottom: 15px;
     }
-
     .modal button {
       background-color: #007bff;
       color: white;
@@ -100,41 +116,27 @@
       cursor: pointer;
       width: 100%;
     }
+    .modal button:hover { background-color: #0056b3; }
+    .btn-danger-modal { background-color: #dc3545 !important; }
+    .btn-danger-modal:hover { background-color: #a71d2a !important; }
 
-    .modal button:hover {
-      background-color: #0056b3;
-    }
-
-    .btn-danger {
-      background-color: #dc3545;
-    }
-
-    .btn-danger:hover {
-      background-color: #a71d2a;
-    }
-
-    @media (max-width: 600px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      header h2 {
-        font-size: 18px;
-      }
-      header div {
-        width: 100%;
-        justify-content: flex-start;
-      }
+    @media (max-width: 700px) {
+      header{ padding-bottom: 14px; }
+      header h2{ font-size:18px; }
+      .actions{ width:100%; justify-content:flex-start; }
+      .btn{ font-size:13px; padding:7px 12px; }
+      #calendario{ padding:10px; }
     }
   </style>
 </head>
 <body>
   <header>
     <h2>Panel de Guardias - Conectar SRL</h2>
-    <div>
-      <a href="{{ url_for('ver_historial') }}">Historial</a>
-      <a href="{{ url_for('logout') }}" class="logout">Cerrar sesión</a>
-    </div>
+    <nav class="actions" aria-label="Acciones del panel">
+      <a class="btn" href="/">Vista Pública</a>
+      <a class="btn" href="{{ url_for('ver_historial') }}" title="Ver historial">Historial</a>
+      <a class="btn btn-danger" href="{{ url_for('logout') }}" title="Cerrar sesión">Cerrar sesión</a>
+    </nav>
   </header>
 
   <div id="calendario"></div>
@@ -172,34 +174,45 @@
     <div class="modal">
       <h3>¿Eliminar esta guardia?</h3>
       <p>Esta acción no se puede deshacer.</p>
-      <button id="confirmDeleteBtn" class="btn-danger">Eliminar</button>
+      <button id="confirmDeleteBtn" class="btn-danger-modal">Eliminar</button>
     </div>
   </div>
 
+  <!-- Datos en JSON para evitar errores del editor -->
+  <script id="personas-json" type="application/json">{{ personas | tojson }}</script>
+  <script id="eventos-json"  type="application/json">{{ eventos  | tojson }}</script>
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const personas = {{ personas | tojson }};
-      const calendarEl = document.getElementById('calendario');
+      // Lee datos seguros desde los scripts JSON
+      const personas = JSON.parse(document.getElementById('personas-json').textContent || '[]');
+      const eventos  = JSON.parse(document.getElementById('eventos-json').textContent  || '[]');
 
-      const formOverlay = document.getElementById('form-overlay');
-      const editOverlay = document.getElementById('edit-overlay');
-      const deleteOverlay = document.getElementById('delete-overlay');
-
-      const personaSelect = document.getElementById('personaSelect');
+      const calendarEl      = document.getElementById('calendario');
+      const formOverlay     = document.getElementById('form-overlay');
+      const editOverlay     = document.getElementById('edit-overlay');
+      const deleteOverlay   = document.getElementById('delete-overlay');
+      const personaSelect   = document.getElementById('personaSelect');
       const personaEditSelect = document.getElementById('personaEditSelect');
-
-      const guardarBtn = document.getElementById('guardarBtn');
-      const editarBtn = document.getElementById('editarBtn');
-      const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+      const guardarBtn        = document.getElementById('guardarBtn');
+      const editarBtn         = document.getElementById('editarBtn');
+      const confirmDeleteBtn  = document.getElementById('confirmDeleteBtn');
 
       let fechaInicio = null;
-      let fechaFin = null;
+      let fechaFin    = null;
       let eventoActual = null;
+
+      // Helper: valida si la persona existe en la estructura recibida
+      function personaExiste(nombre, data){
+        if (Array.isArray(data)) return data.includes(nombre);
+        if (data && typeof data === 'object') return Object.prototype.hasOwnProperty.call(data, nombre);
+        return false;
+      }
 
       const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         selectable: true,
-        events: {{ eventos | safe }},
+        events: eventos,             // ← sin Jinja dentro de JS
         height: "auto",
         locale: 'es',
 
@@ -213,7 +226,6 @@
 
         eventClick: function (info) {
           eventoActual = info.event;
-
           const opcion = confirm("¿Querés editar esta guardia?");
           if (opcion) {
             editOverlay.style.display = 'flex';
@@ -225,7 +237,7 @@
 
       guardarBtn.addEventListener("click", () => {
         const persona = personaSelect.value;
-        if (persona && personas[persona]) {
+        if (persona && personaExiste(persona, personas)) {
           fetch("/agregar_evento", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -243,14 +255,18 @@
 
       editarBtn.addEventListener("click", () => {
         const nuevaPersona = personaEditSelect.value;
-        if (nuevaPersona && personas[nuevaPersona]) {
+        if (!eventoActual) return;
+        const startStr = eventoActual.startStr;
+        const endStr   = eventoActual.endStr || startStr;
+
+        if (nuevaPersona && personaExiste(nuevaPersona, personas)) {
           fetch("/editar_evento", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               persona: nuevaPersona,
-              fecha_inicio: eventoActual.startStr,
-              fecha_fin: eventoActual.endStr
+              fecha_inicio: startStr,
+              fecha_fin: endStr
             })
           }).then(() => {
             editOverlay.style.display = "none";
@@ -260,12 +276,16 @@
       });
 
       confirmDeleteBtn.addEventListener("click", () => {
+        if (!eventoActual) return;
+        const startStr = eventoActual.startStr;
+        const endStr   = eventoActual.endStr || startStr;
+
         fetch("/eliminar_evento", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            fecha_inicio: eventoActual.startStr,
-            fecha_fin: eventoActual.endStr
+            fecha_inicio: startStr,
+            fecha_fin: endStr
           })
         }).then(() => {
           deleteOverlay.style.display = "none";
@@ -273,7 +293,7 @@
         });
       });
 
-      [formOverlay, editOverlay, deleteOverlay].forEach(overlay => {
+      [formOverlay, editOverlay, deleteOverlay].forEach((overlay) => {
         overlay.addEventListener("click", (e) => {
           if (e.target === overlay) {
             overlay.style.display = "none";
