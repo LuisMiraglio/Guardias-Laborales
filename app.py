@@ -10,7 +10,9 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = 'clave-secreta-luis'
 
+# ----------------------------
 # Configuración de correo
+# ----------------------------
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -20,7 +22,9 @@ app.config['MAIL_DEFAULT_SENDER'] = 'miraglioluis1@gmail.com'
 
 mail = Mail(app)
 
-# Configuración de base de datos SQLite con ruta absoluta
+# ----------------------------
+# Configuración de base de datos
+# ----------------------------
 basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, 'instance', 'guardias.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
@@ -28,6 +32,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# ----------------------------
+# Datos base
+# ----------------------------
 # Personas que hacen guardia
 personas = {
     "Luis Miraglio": {"email": "miraglioluis1@gmail.com", "color": "#007bff"},
@@ -35,7 +42,16 @@ personas = {
     "Alejo Orellano": {"email": "alejo.orellano.ices@gmail.com", "color": "#dc3545"}
 }
 
+# Nodos (datos de ejemplo en memoria)
+nodos_data = [
+    {"id": 100, "nombre": "Nodo 100", "usuarios": 8, "estado": "OK", "nota": ""},
+    {"id": 101, "nombre": "Nodo 101", "usuarios": 6, "estado": "OK", "nota": ""},
+    {"id": 102, "nombre": "Nodo 102", "usuarios": 3, "estado": "Revisar", "nota": "potencia baja"},
+]
+
+# ----------------------------
 # Modelos
+# ----------------------------
 class Evento(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     persona = db.Column(db.String(100), nullable=False)
@@ -48,7 +64,9 @@ class Historial(db.Model):
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
     descripcion = db.Column(db.Text, nullable=False)
 
-# Función para registrar historial
+# ----------------------------
+# Utilidades
+# ----------------------------
 def registrar_historial(mensaje):
     h = Historial(descripcion=mensaje)
     db.session.add(h)
@@ -57,6 +75,9 @@ def registrar_historial(mensaje):
 with app.app_context():
     db.create_all()
 
+# ----------------------------
+# Rutas principales
+# ----------------------------
 @app.route("/")
 def calendario_publico():
     eventos = Evento.query.all()
@@ -93,6 +114,7 @@ def panel_admin():
             "color": e.color
         } for e in eventos
     ]
+    # Pasamos el dict completo de personas (lo usás con tojson en admin.html)
     return render_template("admin.html", eventos=eventos_json, personas=personas)
 
 @app.route("/historial")
@@ -102,6 +124,9 @@ def ver_historial():
     lineas = Historial.query.order_by(Historial.fecha.desc()).all()
     return render_template("historial.html", lineas=lineas)
 
+# ----------------------------
+# CRUD de eventos (AJAX)
+# ----------------------------
 @app.route("/agregar_evento", methods=["POST"])
 def agregar_evento():
     if not session.get('admin'):
@@ -146,6 +171,9 @@ def eliminar_evento():
         registrar_historial(f"Guardia eliminada del {data['fecha_inicio']} al {data['fecha_fin']}")
     return jsonify({"status": "eliminado"})
 
+# ----------------------------
+# Envío de correos
+# ----------------------------
 def enviar_correos_guardias():
     hoy = datetime.today().date()
     sabado = hoy + timedelta((5 - hoy.weekday()) % 7)
@@ -163,11 +191,6 @@ def enviar_correos_guardias():
         except Exception as e:
             registrar_historial(f"Error al enviar correo a {evento.persona}: {e}")
 
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for("admin"))
-
 @app.route("/enviar_recordatorio")
 def enviar_recordatorio_manual():
     if not session.get('admin'):
@@ -175,5 +198,29 @@ def enviar_recordatorio_manual():
     enviar_correos_guardias()
     return "Correo enviado manualmente."
 
+# ----------------------------
+# Sesión
+# ----------------------------
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("admin"))
+
+# ----------------------------
+# NODOS
+# ----------------------------
+@app.route("/nodos")
+def ver_nodos():
+    # Vista pública con la tabla de nodos
+    return render_template("nodos.html", nodos=nodos_data)
+
+@app.route("/nodos.json")
+def nodos_json():
+    # API simple por si luego querés consumir con fetch()
+    return jsonify(nodos_data)
+
+# ----------------------------
+# Run
+# ----------------------------
 if __name__ == "__main__":
     app.run(debug=True)

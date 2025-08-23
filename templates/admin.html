@@ -12,24 +12,22 @@
       /* Header + botones */
       --brand:#022f67;
 
-      --btn-bg:#343a40;            /* base gris (si hiciera falta) */
+      --btn-bg:#343a40;
       --btn-bg-hover:#4b5259;
 
-      --amber:#FBBF24;             /* Vista Pública */
+      --amber:#FBBF24;
       --amber-border:#F59E0B;
       --amber-hover:#F59E0B;
       --amber-active:#D97706;
 
-      --btn-danger:#dc3545;        /* Cerrar sesión */
+      --btn-danger:#dc3545;
       --btn-danger-hover:#a71d2a;
 
-      /* Nuevos colores */
       --btn-info:#22c55e;
       --btn-info-hover:#16a34a;
       --btn-info-active:#15803d;
 
-
-      --btn-slate:#6B7280;         /* Historial */
+      --btn-slate:#6B7280;
       --btn-slate-hover:#4B5563;
 
       --text:#fff;
@@ -37,7 +35,7 @@
       --pad-y:8px;
       --pad-x:14px;
 
-      /* Look & feel del calendario (como pública) */
+      /* Calendario */
       --ink:#1f2937;
       --muted:#6b7280;
       --grid:#e7edf5;
@@ -81,93 +79,76 @@
     .btn:active{ transform:scale(.98); }
     .btn:focus-visible{ outline:2px solid #7aa7ff; outline-offset:2px; }
 
-    .btn-amber{
-      background:var(--amber); color:#0F172A; border-color:var(--amber-border);
-    }
+    .btn-amber{ background:var(--amber); color:#0F172A; border-color:var(--amber-border); }
     .btn-amber:hover{ background:var(--amber-hover); }
     .btn-amber:active{ background:var(--amber-active); }
 
     .btn-danger{ background:var(--btn-danger); color:#fff; }
     .btn-danger:hover{ background:var(--btn-danger-hover); }
 
-    /* Nuevas variantes */
-    .btn-info{
-      background:var(--btn-info); color:#fff;
-    }
+    .btn-info{ background:var(--btn-info); color:#fff; }
     .btn-info:hover{ background:var(--btn-info-hover); }
     .btn-info:active{ background:var(--btn-info-active); }
 
-    .btn-slate{
-      background:var(--btn-slate); color:#fff;
-    }
+    .btn-slate{ background:var(--btn-slate); color:#fff; }
     .btn-slate:hover{ background:var(--btn-slate-hover); }
+
+    /* ===== ÚNICO CAMBIO: texto negro en los 4 botones del header ===== */
+    header .actions .btn{ color:#0F172A !important; }
 
     /* ===== Contenedor calendario ===== */
     #calendario{ padding:14px 20px 20px; width:100%; box-sizing:border-box; }
 
-    /* ===== FullCalendar (igual a pública) ===== */
+    /* ===== FullCalendar ===== */
     .fc-theme-standard td, .fc-theme-standard th { border-color: var(--grid); }
 
-    .fc .fc-toolbar { gap: 10px; }
+    /* Centrado perfecto del título (mes/año) en la toolbar */
+    .fc .fc-toolbar{
+      display:flex;      /* además de gap, forzamos flex */
+      gap:10px;
+    }
+    .fc .fc-toolbar-chunk{ flex:1 1 0; }                 /* izquierda y derecha ocupan lo mismo */
+    .fc .fc-toolbar-chunk:nth-child(2){ flex:0 0 auto; } /* centro (título) solo lo necesario */
+    .fc .fc-toolbar-title{ margin:0 auto; }              /* y alineado al centro */
+
     .fc .fc-toolbar-title{
-      font-weight: 800;
-      letter-spacing:.3px;
+      font-weight: 800; letter-spacing:.3px;
       font-size: clamp(1.3rem, 3vw, 1.8rem);
       color: var(--ink);
     }
-
     .fc .fc-button{
-      border-radius: 10px;
-      border: 0;
-      padding: 6px 12px;
-      line-height: 1.1;
+      border-radius: 10px; border: 0; padding: 6px 12px; line-height: 1.1;
       box-shadow: 0 1px 2px rgba(0,0,0,.08);
     }
     .fc .fc-button-primary{ background:#2f3747; }
     .fc .fc-button-primary:hover{ background:#232a38; }
-
     .fc .fc-col-header-cell{ background: var(--head-bg); }
     .fc .fc-col-header-cell-cushion{
-      padding: 12px 6px;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: capitalize;
-      letter-spacing:.2px;
+      padding: 12px 6px; font-weight: 700; color: var(--muted);
+      text-transform: capitalize; letter-spacing:.2px;
     }
-
     .fc .fc-daygrid-day-frame{ padding: 6px; }
     .fc .fc-daygrid-day-number{
-      display:inline-block;
-      padding: 6px 8px;
-      border-radius: 8px;
-      font-weight: 700;
-      color:#374151;
+      display:inline-block; padding: 6px 8px; border-radius: 8px;
+      font-weight: 700; color:#374151;
     }
     .fc .fc-day-today .fc-daygrid-day-number{
-      background: rgba(13,110,253,.12);
-      color: var(--today-pill);
+      background: rgba(13,110,253,.12); color: var(--today-pill);
     }
     .fc .fc-day-other .fc-daygrid-day-number{ color:#9aa3af; }
     .fc .fc-day-other .fc-daygrid-event{ opacity:.6; }
-
     .fc .fc-day-sat .fc-daygrid-day-frame,
     .fc .fc-day-sun .fc-daygrid-day-frame{ background:#fafcff; }
-
     .fc .fc-daygrid-event{
-      border:0;
-      border-radius:10px;
-      padding:2px 6px;
-      font-weight:600;
+      border:0; border-radius:10px; padding:2px 6px; font-weight:600;
       box-shadow:0 1px 0 rgba(0,0,0,.06);
     }
     .fc .fc-event-time{ font-weight:700; }
-
     .fc .fc-more-link{ font-weight:700; color:#2563eb; }
 
     /* ===== Modales ===== */
     .overlay{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.6);
+      position:fixed; inset:0; background: rgba(0,0,0,.6);
       display:none; justify-content:center; align-items:center;
       z-index:999;
     }
@@ -179,14 +160,21 @@
     .modal h3{ margin:0 0 15px; font-size:20px; color:#333; }
     .modal label{ display:block; margin-bottom:10px; font-size:14px; color:#555; text-align:left; }
     .modal select{
-      width:100%; padding:10px; font-size:15px;
-      border:1px solid #ccc; border-radius:6px; margin-bottom:15px;
+      width:100%; padding:10px; font-size:15px; border:1px solid #ccc; border-radius:6px; margin-bottom:12px;
     }
-    .modal button{
-      background:#007bff; color:#fff; padding:10px 15px; border:none;
-      font-size:15px; border-radius:6px; cursor:pointer; width:100%;
+    .modal .actions{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;
     }
-    .modal button:hover{ background:#0056b3; }
+    .modal .btn-primary{
+      background:#007bff; color:#fff; padding:10px 15px; border:none; font-size:15px; border-radius:6px; cursor:pointer; flex:1;
+    }
+    .modal .btn-primary:hover{ background:#0056b3; }
+    .modal .btn-outline-danger{
+      background:#fff; color:var(--btn-danger); border:1px solid var(--btn-danger);
+      padding:10px 15px; font-size:15px; border-radius:6px; cursor:pointer; flex:1;
+    }
+    .modal .btn-outline-danger:hover{ background:#ffe9ec; }
+
     .btn-danger-modal{ background:#dc3545 !important; }
     .btn-danger-modal:hover{ background:#a71d2a !important; }
 
@@ -223,11 +211,11 @@
           <option value="{{ nombre }}">{{ nombre }}</option>
         {% endfor %}
       </select>
-      <button id="guardarBtn">Guardar</button>
+      <button id="guardarBtn" class="btn-primary">Guardar</button>
     </div>
   </div>
 
-  <!-- Modal: Editar -->
+  <!-- Modal: Editar (con opción de eliminar) -->
   <div class="overlay" id="edit-overlay">
     <div class="modal">
       <h3>Editar Guardia</h3>
@@ -237,11 +225,14 @@
           <option value="{{ nombre }}">{{ nombre }}</option>
         {% endfor %}
       </select>
-      <button id="editarBtn">Guardar cambios</button>
+      <div class="actions">
+        <button id="editarBtn" class="btn-primary">Guardar cambios</button>
+        <button id="deleteFromEditBtn" class="btn-outline-danger" type="button">Eliminar guardia</button>
+      </div>
     </div>
   </div>
 
-  <!-- Modal: Eliminar -->
+  <!-- Modal: Confirmar Eliminación -->
   <div class="overlay" id="delete-overlay">
     <div class="modal">
       <h3>¿Eliminar esta guardia?</h3>
@@ -256,11 +247,9 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // Datos seguros
       const personas = JSON.parse(document.getElementById('personas-json').textContent || '[]');
       const eventos  = JSON.parse(document.getElementById('eventos-json').textContent  || '[]');
 
-      // Refs
       const calendarEl        = document.getElementById('calendario');
       const formOverlay       = document.getElementById('form-overlay');
       const editOverlay       = document.getElementById('edit-overlay');
@@ -269,6 +258,7 @@
       const personaEditSelect = document.getElementById('personaEditSelect');
       const guardarBtn        = document.getElementById('guardarBtn');
       const editarBtn         = document.getElementById('editarBtn');
+      const deleteFromEditBtn = document.getElementById('deleteFromEditBtn');
       const confirmDeleteBtn  = document.getElementById('confirmDeleteBtn');
       const sendReminderBtn   = document.getElementById('sendReminderBtn');
 
@@ -289,7 +279,6 @@
         sendReminderBtn.disabled = true;
         sendReminderBtn.textContent = 'Enviando…';
         try {
-          // Tu ruta actual es GET:
           const res = await fetch('/enviar_recordatorio', { method: 'GET' });
           const txt = await res.text();
           alert(txt || 'Listo.');
@@ -325,12 +314,7 @@
 
         eventClick: function (info) {
           eventoActual = info.event;
-          const opcion = confirm("¿Querés editar esta guardia?");
-          if (opcion) {
-            editOverlay.style.display = 'flex';
-          } else {
-            deleteOverlay.style.display = 'flex';
-          }
+          editOverlay.style.display = 'flex';
         }
       });
 
@@ -358,6 +342,11 @@
             body: JSON.stringify({ persona: nuevaPersona, fecha_inicio: startStr, fecha_fin: endStr })
           }).then(() => { editOverlay.style.display = "none"; location.reload(); });
         }
+      });
+
+      deleteFromEditBtn.addEventListener("click", () => {
+        editOverlay.style.display = "none";
+        deleteOverlay.style.display = "flex";
       });
 
       confirmDeleteBtn.addEventListener("click", () => {
