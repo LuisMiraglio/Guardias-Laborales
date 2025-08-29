@@ -34,26 +34,6 @@
     }
     header h2{ margin:0; letter-spacing:.3px; }
 
-    /* Botón Nodos (izquierda) */
-    .nodes-btn{
-      position:absolute;
-      left:20px; top:50%;
-      transform:translateY(-50%);
-      display:inline-flex; align-items:center; justify-content:center;
-      height:36px; padding:8px 14px;
-      border-radius:8px;
-      font-size:14px; font-weight:600;
-      text-decoration:none; cursor:pointer;
-      background:#10B981;          /* verde */
-      color:#0F172A;
-      border:1px solid #059669;
-      box-shadow:0 2px 8px rgba(0,0,0,.18);
-      transition:background .15s ease, box-shadow .15s ease, transform .05s ease;
-    }
-    .nodes-btn:hover{ background:#059669; box-shadow:0 4px 12px rgba(0,0,0,.22); }
-    .nodes-btn:active{ background:#047857; transform:translateY(-50%) scale(.98); }
-    .nodes-btn:focus-visible{ outline:2px solid #7aa7ff; outline-offset:2px; }
-
     /* Botón Panel Administración — ámbar con alto fijo */
     .admin-btn{
       position:absolute;
@@ -130,7 +110,6 @@
     @media (max-width:600px){
       header h2{ font-size:18px; text-align:center; }
       .admin-btn{ right:12px; padding:7px 12px; font-size:13px; border-radius:6px; height:34px; }
-      .nodes-btn{ left:12px;  padding:7px 12px; font-size:13px; border-radius:6px; height:34px; }
       #calendario{ padding:10px; }
       .fc .fc-col-header-cell-cushion{ padding:10px 4px; }
     }
@@ -138,7 +117,6 @@
 </head>
 <body>
   <header>
-    <a class="nodes-btn" href="/nodos" title="Ver Nodos">Nodos</a>
     <h2>Calendario de Guardias - Conectar SRL</h2>
     <a class="admin-btn" href="/panel" title="Ir al Panel de Administración">Panel Administración</a>
   </header>

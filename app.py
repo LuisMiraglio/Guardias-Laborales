@@ -42,13 +42,6 @@ personas = {
     "Alejo Orellano": {"email": "alejo.orellano.ices@gmail.com", "color": "#dc3545"}
 }
 
-# Nodos (datos de ejemplo en memoria)
-nodos_data = [
-    {"id": 100, "nombre": "Nodo 100", "usuarios": 8, "estado": "OK", "nota": ""},
-    {"id": 101, "nombre": "Nodo 101", "usuarios": 6, "estado": "OK", "nota": ""},
-    {"id": 102, "nombre": "Nodo 102", "usuarios": 3, "estado": "Revisar", "nota": "potencia baja"},
-]
-
 # ----------------------------
 # Modelos
 # ----------------------------
@@ -205,19 +198,6 @@ def enviar_recordatorio_manual():
 def logout():
     session.clear()
     return redirect(url_for("admin"))
-
-# ----------------------------
-# NODOS
-# ----------------------------
-@app.route("/nodos")
-def ver_nodos():
-    # Vista pública con la tabla de nodos
-    return render_template("nodos.html", nodos=nodos_data)
-
-@app.route("/nodos.json")
-def nodos_json():
-    # API simple por si luego querés consumir con fetch()
-    return jsonify(nodos_data)
 
 # ----------------------------
 # Run
